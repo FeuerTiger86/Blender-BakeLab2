@@ -190,6 +190,7 @@ class BakeLabUI(Panel):
                     subcol.prop(item, "image_scale")
                 
                 col.separator()
+                col.prop(item, "background_color")
                 col.prop(item, "float_depth")
                 if props.save_or_pack == 'SAVE':
                     row = col.row()

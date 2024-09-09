@@ -1,5 +1,6 @@
 import os
 import bpy
+from itertools import chain
 
 from bpy.types import (
             Operator, 
@@ -431,7 +432,8 @@ class Baker(Operator):
         bake_image = bpy.data.images.new(
             name = map.img_name.replace('*', name),
             width  = map.target_width  * map.final_aa, 
-            height = map.target_height * map.final_aa
+            height = map.target_height * map.final_aa,
+            alpha = True
         )
         bake_image.use_generated_float = map.float_depth
         try:
@@ -442,6 +444,7 @@ class Baker(Operator):
                     bake_image.colorspace_settings.name = 'sRGB EOTF'
                 elif map.color_space == 'Non-Color':
                     bake_image.colorspace_settings.name = 'Non-Colour Data'
+                    
             except:
                 self.report(type = {'WARNING'}, message = "Couldn't change color space of image")
         

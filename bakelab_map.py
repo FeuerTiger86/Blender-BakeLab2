@@ -11,7 +11,8 @@ from bpy.props import (
             FloatProperty,
             StringProperty,
             PointerProperty,
-            CollectionProperty
+            CollectionProperty,
+            FloatVectorProperty
         )
 
 class BakeLabMap(PropertyGroup):
@@ -71,7 +72,14 @@ class BakeLabMap(PropertyGroup):
             )
     final_aa : IntProperty(name = 'Final Anti-alias')
 
-    
+    background_color : FloatVectorProperty(
+                name = 'Background Color',
+                default = (0.0,0.0,0.0,1.0),   
+                min = 0.0, max = 1.0,
+                subtype = 'COLOR',
+                size = 4
+            )
+
     float_depth: BoolProperty(name = '32 bit float', default = False)
     color_space : EnumProperty(
                 name = 'Color Space',
@@ -87,7 +95,8 @@ class BakeLabMap(PropertyGroup):
                     ('JPEG', 'JPEG', ''),
                     ('OPEN_EXR',  'OpenEXR', '')
                 )
-            )
+            )    
+            
     png_channels : EnumProperty(
                 name = 'Color',
                 items =  (('BW','BW',''),
@@ -225,7 +234,15 @@ class BakeLabAddMapItem(bpy.types.Operator):
                                     min = 1, soft_max = 16384)
     image_scale: FloatProperty(name = 'Image Scale',default = 1,
                                     min = 0)
-    
+                                    
+    background_color : FloatVectorProperty(
+                name = 'Background Color',
+                default = (0.0,0.0,0.0,1.0),
+                min = 0.0, max = 1.0,
+                subtype = 'COLOR',
+                size = 4
+            )
+            
     float_depth: BoolProperty(name = '32 bit float', default = False)            
     file_format : EnumProperty(
                 name = 'Format',
@@ -320,6 +337,7 @@ class BakeLabAddMapItem(bpy.types.Operator):
             item.img_name = '*_n'
             item.samples  = 16
             item.color_space = 'Non-Color'
+            item.background_color = (0.5, 0.5, 1.0, 1.0)
             item.aa_override = 1 #Because cycles has buildin anti-aliasing for normals
         if self.type == 'Displacement':
             item.img_name = '*_h'
@@ -329,6 +347,7 @@ class BakeLabAddMapItem(bpy.types.Operator):
             item.img_name = '*_ao'
             item.samples  = 64
             item.color_space = 'Non-Color'
+            item.background_color = (1.0, 1.0, 1.0, 1.0)
         if self.type == 'Shadow':
             item.img_name = '*_sh'
             item.samples  = 32
@@ -377,6 +396,7 @@ class BakeLabAddMapItem(bpy.types.Operator):
             layout.prop(self, "image_scale")
             
         layout.prop(self, "float_depth")
+        
         if props.save_or_pack == 'SAVE':
             row = layout.row()
             row.prop(self, "file_format")
